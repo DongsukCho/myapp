@@ -2,7 +2,6 @@ pipeline {
   agent {
     kubernetes {
         label 'jnlp-agent'
-        defaultContainer 'git'
         yamlFile 'jenkins-agent-pod.yaml'
     }
   }
