@@ -19,6 +19,7 @@ pipeline {
 
     stage('Install & Build') {
       steps {
+        sh 'sleep 3600'
         container('node') {
           sh 'npm install'
         }
