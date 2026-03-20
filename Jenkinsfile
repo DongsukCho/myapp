@@ -2,7 +2,32 @@ pipeline {
   agent {
     kubernetes {
         label 'jnlp-agent'
-        yamlFile 'jenkins-agent-pod.yaml'
+        yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    - name: jnlp
+      image: jenkins/inbound-agent:latest
+
+    - name: node
+      image: node:18-alpine
+      command: ['cat']
+      tty: true
+
+    - name: docker
+      image: docker:20.10.24
+      command: ['cat']
+      tty: true
+      volumeMounts:
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+
+  volumes:
+    - name: docker-sock
+      hostPath:
+        path: /var/run/docker.sock
+"""
     }
   }
 
@@ -19,7 +44,6 @@ pipeline {
 
     stage('Install & Build') {
       steps {
-        sh 'sleep 3600'
         container('node') {
           sh 'npm install'
         }
