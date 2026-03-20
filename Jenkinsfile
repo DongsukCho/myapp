@@ -11,13 +11,6 @@ pipeline {
   }
 
   stages {
-    stage('Install Dependencies') {
-      steps {
-        container('node') {
-          sh 'npm install'
-        }
-      }
-    }
 
     stage('Build') {
       steps {
