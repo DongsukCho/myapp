@@ -6,6 +6,7 @@ spec:
       image: jenkins/inbound-agent
       args: ['$(JENKINS_SECRET)', '$(JENKINS_NAME)']
 
+
     - name: node
       image: node:18-alpine
       command: ['cat']
