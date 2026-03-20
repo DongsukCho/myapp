@@ -45,6 +45,7 @@ spec:
     stage('Install & Build') {
       steps {
         container('node') {
+          sh 'sleep 3600'
           sh 'npm install'
         }
       }
