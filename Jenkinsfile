@@ -7,6 +7,7 @@ pipeline {
   }
 
   environment {
+    GIT_TOOL = "/usr/bin/git"
     IMAGE = "myapp:latest"
   }
 
