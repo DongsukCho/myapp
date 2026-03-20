@@ -1,29 +1,61 @@
 pipeline {
-  agent any
+  agent {
+    kubernetes {
+        label 'jnlp-agent'
+        yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: jnlp
+    image: jenkins/inbound-agent:latest
+
+  - name: tools
+    image: my-jenkins-agent:latest
+    command: ['cat']
+    tty: true
+    volumeMounts:
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
+
+  volumes:
+  - name: docker-sock
+    hostPath:
+      path: /var/run/docker.sock
+"""
+    }
+  }
 
   environment {
     IMAGE = "myapp:latest"
   }
 
   stages {
-
-    stage('Clone') {
+    stage('Checkout') {
       steps {
-        git url: 'https://github.com/DongsukCho/myapp.git',
-            branch: main
+        container('tools') {
+          git 'https://github.com/DongsukCho/myapp.git'
+        }
       }
     }
 
-    stage('Build Docker') {
+    stage('Build') {
       steps {
-        sh 'docker build -t $IMAGE .'
+        container('tools') {
+          sh 'docker build -t $IMAGE .'
+        }
       }
     }
 
-    stage('Deploy to K8s') {
+    stage('Deploy (Helm)') {
       steps {
-        sh 'kubectl apply -f deployment.yaml'
-        sh 'kubectl apply -f service.yaml'
+        container('tools') {
+          sh '''
+          helm upgrade --install myapp ./chart \
+            --set image.repository=myapp \
+            --set image.tag=latest
+          '''
+        }
       }
     }
   }
