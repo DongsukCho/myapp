@@ -57,13 +57,5 @@ spec:
         }
       }
     }
-
-    stage('Run Test Container') {
-      steps {
-        container('docker') {
-          sh 'docker run -d -p 3000:3000 $IMAGE_NAME'
-        }
-      }
-    }
   }
 }
