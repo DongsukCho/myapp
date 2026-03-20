@@ -7,14 +7,12 @@ pipeline {
   }
 
   environment {
-    GIT_TOOL = "/usr/bin/git"
     IMAGE = "myapp:latest"
   }
 
   stages {
     stage('Install Dependencies') {
       steps {
-        sh 'sleep 3600'
         container('node') {
           sh 'npm install'
         }
