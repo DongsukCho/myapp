@@ -7,16 +7,31 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: jnlp
-    image: jenkins/inbound-agent:latest
+    - name: jnlp
+      image: jenkins/inbound-agent:latest
 
-  - name: tools
-    image: my-jenkins-agent:latest
-    command: ['cat']
-    tty: true
-    volumeMounts:
-    - name: docker-sock
-      mountPath: /var/run/docker.sock
+    - name: git
+      image: alpine/git:latest
+      command: ['cat']
+      tty: true
+
+    - name: docker
+      image: docker:24
+      command: ['cat']
+      tty: true
+      volumeMounts:
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+
+    - name: helm
+      image: alpine/helm:3.14.0
+      command: ['cat']
+      tty: true
+
+    - name: kubectl
+      image: bitnami/kubectl
+      command: ['cat']
+      tty: true
 
   volumes:
   - name: docker-sock
@@ -33,15 +48,15 @@ spec:
   stages {
     stage('Checkout') {
       steps {
-        container('tools') {
-          git 'https://github.com/DongsukCho/myapp.git'
+        container('git') {
+          git branch: 'main', url: 'https://github.com/DongsukCho/myapp.git'
         }
       }
     }
 
     stage('Build') {
       steps {
-        container('tools') {
+        container('docker') {
           sh 'docker build -t $IMAGE .'
         }
       }
@@ -49,7 +64,7 @@ spec:
 
     stage('Deploy (Helm)') {
       steps {
-        container('tools') {
+        container('helm') {
           sh '''
           helm upgrade --install myapp ./chart \
             --set image.repository=myapp \
