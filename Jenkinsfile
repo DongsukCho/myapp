@@ -2,6 +2,7 @@ pipeline {
   agent {
     kubernetes {
         label 'jnlp-agent'
+        defaultContainer 'git'
         yamlFile 'jenkins-agent-pod.yaml'
     }
   }
@@ -11,9 +12,11 @@ pipeline {
   }
 
   stages {
-    stage('Checkout') {
+    stage('Install Dependencies') {
       steps {
-        git branch: 'main', url: 'https://github.com/DongsukCho/myapp.git'
+        container('node') {
+          sh 'npm install'
+        }
       }
     }
 
