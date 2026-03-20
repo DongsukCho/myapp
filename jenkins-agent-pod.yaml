@@ -3,26 +3,22 @@ kind: Pod
 spec:
   containers:
     - name: jnlp
-      image: jenkins/inbound-agent
-      args: ['$(JENKINS_SECRET)', '$(JENKINS_NAME)']
+      image: jenkins/inbound-agent:latest
+
+    - name: node
+      image: node:18-alpine
+      command:
+        - cat
+      tty: true
 
     - name: docker
-      image: docker:24
-      command: ['cat']
+      image: docker:20.10.24
+      command:
+        - cat
       tty: true
       volumeMounts:
         - name: docker-sock
           mountPath: /var/run/docker.sock
-
-    - name: helm
-      image: alpine/helm:3.14.0
-      command: ['cat']
-      tty: true
-
-    - name: kubectl
-      image: bitnami/kubectl
-      command: ['cat']
-      tty: true
 
   volumes:
     - name: docker-sock

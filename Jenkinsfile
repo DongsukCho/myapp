@@ -10,24 +10,37 @@ pipeline {
     IMAGE = "myapp:latest"
   }
 
-  stages {
+  environment {
+    IMAGE_NAME = "myapp:latest"
+  }
 
-    stage('Build') {
+  stages {
+    stage('Checkout') {
       steps {
-        container('docker') {
-          sh 'docker build -t $IMAGE .'
+        git 'https://github.com/DongsukCho/myapp.git'
+      }
+    }
+
+    stage('Install & Build') {
+      steps {
+        container('node') {
+          sh 'npm install'
         }
       }
     }
 
-    stage('Deploy (Helm)') {
+    stage('Docker Build') {
       steps {
-        container('helm') {
-          sh '''
-          helm upgrade --install myapp ./chart \
-            --set image.repository=myapp \
-            --set image.tag=latest
-          '''
+        container('docker') {
+          sh 'docker build -t $IMAGE_NAME .'
+        }
+      }
+    }
+
+    stage('Run Test Container') {
+      steps {
+        container('docker') {
+          sh 'docker run -d -p 3000:3000 $IMAGE_NAME'
         }
       }
     }
