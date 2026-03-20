@@ -14,6 +14,7 @@ pipeline {
   stages {
     stage('Install Dependencies') {
       steps {
+        sh 'sleep 3600'
         container('node') {
           sh 'npm install'
         }
