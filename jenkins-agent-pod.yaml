@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    - name: node
+      image: node:18-alpine
+      command: ['cat']
+      tty: true
+
+    - name: docker
+      image: docker:24
+      command: ['cat']
+      tty: true
+      volumeMounts:
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+
+    - name: helm
+      image: alpine/helm:3.14.0
+      command: ['cat']
+      tty: true
+
+    - name: kubectl
+      image: bitnami/kubectl
+      command: ['cat']
+      tty: true
+
+  volumes:
+    - name: docker-sock
+      hostPath:
+        path: /var/run/docker.sock
