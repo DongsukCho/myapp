@@ -7,10 +7,6 @@ pipeline {
   }
 
   environment {
-    IMAGE = "myapp:latest"
-  }
-
-  environment {
     IMAGE_NAME = "myapp:latest"
   }
 
