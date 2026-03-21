@@ -21,13 +21,6 @@ spec:
 
     - name: docker
       image: docker:24.0
-      securityContext:
-        privileged: true
-      env:
-      - name: DOCKER_TLS_CERTDIR
-        value: ""
-      args:
-      - --insecure-registry=harbor.default.svc.cluster.local
       command: ['cat']
       tty: true
       volumeMounts:
