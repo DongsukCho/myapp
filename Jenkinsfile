@@ -36,7 +36,7 @@ spec:
   }
 
   environment {
-    IMAGE_NAME = "myapp:${BUILD_NUMBER}"
+    IMAGE_NAME = "myapp:latest"
     HARBOR_URL = "harbor.default.svc.cluster.local"
     HARBOR_IMAGE = "${HARBOR_URL}/library/${IMAGE_NAME}"
   }
@@ -86,7 +86,7 @@ spec:
           sh """
           helm upgrade --install myapp ./chart \
             --set image.repository=${HARBOR_URL}/library/myapp \
-            --set image.tag=${BUILD_NUMBER}
+            --set image.tag=latest
           """
         }
       }
