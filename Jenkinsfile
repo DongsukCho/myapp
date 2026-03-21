@@ -67,7 +67,9 @@ spec:
     stage('Login to Harbor') {
       steps {
         container('docker') {
-            sh "docker login http://${HARBOR_URL} -u admin -p Harbor12345"
+          withCredentials([usernamePassword(credentialsId: 'harbor', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+          sh "docker login http://${HARBOR_URL} -u $USER -p $PASS"
+          }
         }
       }
     }
