@@ -20,7 +20,14 @@ spec:
       tty: true
 
     - name: docker
-      image: docker:24.0
+      image: docker:24-dind
+      securityContext:
+        privileged: true
+      env:
+      - name: DOCKER_TLS_CERTDIR
+        value: ""
+      args:
+      - --insecure-registry=harbor.default.svc.cluster.local
       command: ['cat']
       tty: true
       volumeMounts:
@@ -36,7 +43,9 @@ spec:
   }
 
   environment {
-    IMAGE_NAME = "myapp:latest"
+    IMAGE_NAME = "myapp:${BUILD_NUMBER}"
+    HARBOR_URL = "harbor.default.svc.cluster.local"
+    HARBOR_IMAGE = "${HARBOR_URL}/library/${IMAGE_NAME}"
   }
 
   stages {
@@ -62,13 +71,29 @@ spec:
       }
     }
 
+    stage('Login to Harbor') {
+      steps {
+        container('docker') {
+          withCredentials([usernamePassword(credentialsId: 'harbor-admin', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+            sh "docker login http://${HARBOR_URL} -u $USER -p $PASS"
+          }
+        }
+      }
+    }
+
+    stage('Push to Harbor') {
+      steps {
+        sh "docker push ${IMAGE_NAME}"
+      }
+    }
+
     stage('Deploy') {
       steps {
         container('helm') {
           sh """
-          helm upgrade --install myapp ./helm-chart \
-            --set image.repository=your-dockerhub-id/myapp \
-            --set image.tag=latest
+          helm upgrade --install myapp ./chart \
+            --set image.repository=${HARBOR_URL}/library/myapp \
+            --set image.tag=${BUILD_NUMBER}
           """
         }
       }
