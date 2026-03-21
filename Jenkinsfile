@@ -14,6 +14,11 @@ spec:
       command: ['cat']
       tty: true
 
+    - name: helm
+      image: alpine/helm:3.12.0
+      command: ['cat']
+      tty: true
+
     - name: docker
       image: docker:24.0
       command: ['cat']
@@ -53,6 +58,18 @@ spec:
       steps {
         container('docker') {
           sh 'docker build -t $IMAGE_NAME .'
+        }
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        container('helm') {
+          sh """
+          helm upgrade --install myapp ./helm-chart \
+            --set image.repository=your-dockerhub-id/myapp \
+            --set image.tag=latest
+          """
         }
       }
     }
