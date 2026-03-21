@@ -68,7 +68,6 @@ spec:
       steps {
         container('docker') {
             sh "docker login http://${HARBOR_URL} -u admin -p Harbor12345"
-          }
         }
       }
     }
