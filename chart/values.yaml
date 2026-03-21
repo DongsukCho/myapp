@@ -8,6 +8,4 @@ service:
   type: NodePort
   port: 80
 
-imagePullSecrets:
-  - name: harbor-secret
 
