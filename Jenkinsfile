@@ -6,36 +6,35 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-    - name: jnlp
-      image: jenkins/inbound-agent:latest
+  - name: jnlp
+    image: jenkins/inbound-agent:latest
 
-    - name: node
-      image: node:18-alpine
-      command: ['cat']
-      tty: true
+  - name: node
+    image: node:18-alpine
+    command: ['cat']
+    tty: true
 
-    - name: helm
-      image: alpine/helm:3.12.0
-      command: ['cat']
-      tty: true
+  - name: helm
+    image: alpine/helm:3.12.0
+    command: ['cat']
+    tty: true
 
-    - name: kaniko
-      image: gcr.io/kaniko-project/executor:latest
-      command:
-      - cat
-      tty: true
-      volumeMounts:
-
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    command:
+    - cat
+    tty: true
+    volumeMounts:
     - name: kaniko-secret
       mountPath: /kaniko/.docker
 
   volumes:
-    - name: kaniko-secret
-      secret:
-        secretName: harbor-secret
-        items:
-        - key: .dockerconfigjson
-          path: config.json
+  - name: kaniko-secret
+    secret:
+      secretName: harbor-secret
+      items:
+      - key: .dockerconfigjson
+        path: config.json
 """
     }
   }
@@ -67,6 +66,7 @@ spec:
           sh """
           /kaniko/executor \
             --dockerfile=Dockerfile \
+            --context=${env.WORKSPACE} \
             --destination=${HARBOR_IMAGE} \
             --insecure \
             --skip-tls-verify
