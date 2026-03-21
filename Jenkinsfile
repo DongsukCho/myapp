@@ -42,7 +42,7 @@ spec:
 
   environment {
     IMAGE_NAME = "myapp:latest"
-    HARBOR_URL = "harbor-local-registry.default.svc.cluster.local:5000"
+    HARBOR_URL = "harbor.default.svc.cluster.local"
     HARBOR_IMAGE = "${HARBOR_URL}/library/${IMAGE_NAME}"
   }
 

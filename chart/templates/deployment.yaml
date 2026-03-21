@@ -17,3 +17,6 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         ports:
         - containerPort: 3000
+
+imagePullSecrets:
+  - name: harbor-secret
