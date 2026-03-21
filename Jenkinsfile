@@ -19,18 +19,22 @@ spec:
       command: ['cat']
       tty: true
 
-    - name: docker
-      image: docker:24.0
-      command: ['cat']
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:latest
+      command:
+      - cat
       tty: true
       volumeMounts:
-        - name: docker-sock
-          mountPath: /var/run/docker.sock
 
+    - name: kaniko-secret
+      mountPath: /kaniko/.docker
   volumes:
-    - name: docker-sock
-      hostPath:
-        path: /var/run/docker.sock
+    - name: kaniko-secret
+      secret:
+        secretName: harbor-secret
+        items:
+        - key: .dockerconfigjson
+          path: config.json
 """
     }
   }
@@ -56,29 +60,21 @@ spec:
       }
     }
 
-    stage('Docker Build') {
+    stage('Kaniko Build & Push') {
       steps {
-        container('docker') {
-          sh 'docker build -t $IMAGE_NAME .'
+        container('kaniko') {
+          sh """
+          /kaniko/executor \
+            --dockerfile=Dockerfile \
+            --context=$(pwd) \
+            --destination=${HARBOR_IMAGE} \
+            --insecure \
+            --skip-tls-verify
+          """
         }
       }
     }
 
-    stage('Login to Harbor') {
-      steps {
-        container('docker') {
-          withCredentials([usernamePassword(credentialsId: 'harbor', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-          sh "docker login http://${HARBOR_URL} -u $USER -p $PASS"
-          }
-        }
-      }
-    }
-
-    stage('Push to Harbor') {
-      steps {
-        sh "docker push ${IMAGE_NAME}"
-      }
-    }
 
     stage('Deploy') {
       steps {
