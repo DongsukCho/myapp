@@ -28,6 +28,7 @@ spec:
 
     - name: kaniko-secret
       mountPath: /kaniko/.docker
+
   volumes:
     - name: kaniko-secret
       secret:
@@ -66,7 +67,6 @@ spec:
           sh """
           /kaniko/executor \
             --dockerfile=Dockerfile \
-            --context=$(pwd) \
             --destination=${HARBOR_IMAGE} \
             --insecure \
             --skip-tls-verify
