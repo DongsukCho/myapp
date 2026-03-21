@@ -42,7 +42,7 @@ spec:
 
   environment {
     IMAGE_NAME = "myapp:latest"
-    HARBOR_URL = "http://192.168.49.2:30002"
+    HARBOR_URL = "192.168.49.2:30002"
     HARBOR_IMAGE = "${HARBOR_URL}/library/${IMAGE_NAME}"
   }
 
