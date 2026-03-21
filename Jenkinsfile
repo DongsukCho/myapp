@@ -83,7 +83,7 @@ spec:
           sh """
           helm upgrade --install myapp ./chart \
             --set image.repository=${HARBOR_URL}/library/myapp \
-            --set image.tag=${BUILD_NUMBER}
+            --set image.tag=latest
           """
         }
       }
