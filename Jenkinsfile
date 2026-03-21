@@ -20,7 +20,7 @@ spec:
       tty: true
 
     - name: docker
-      image: docker:24-dind
+      image: docker:24.0
       securityContext:
         privileged: true
       env:
